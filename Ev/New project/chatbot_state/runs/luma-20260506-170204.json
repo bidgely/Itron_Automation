@@ -1,0 +1,29 @@
+{
+  "run_id": "luma-20260506-170204",
+  "pilot": "luma",
+  "date": "20260506",
+  "status": "completed",
+  "output_dir": "output/20260506/luma/scripts",
+  "branch_name": null,
+  "pr_url": null,
+  "mysql_counts": {
+    "full_list": 4417,
+    "request_sent": 0,
+    "checkforev_0": 13
+  },
+  "redshift_counts": {
+    "hsm_has_completed": 273,
+    "hsm_completed": 275,
+    "has_retry": 2,
+    "hsm_retry": 4129,
+    "leftovers": 4129
+  },
+  "script_counts": {
+    "mark_completed_hsm_has_files": 1,
+    "mark_completed_hsm_only_files": 1,
+    "mark_failed_files": 1,
+    "retry_has_files": 1,
+    "retry_hsm_files": 6
+  },
+  "message": "LUMA run completed for 20260506"
+}

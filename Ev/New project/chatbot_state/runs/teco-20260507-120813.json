@@ -1,0 +1,30 @@
+{
+  "run_id": "teco-20260507-120813",
+  "pilot": "teco",
+  "date": "20260507",
+  "status": "completed",
+  "output_dir": "output/20260507/teco/scripts",
+  "frontend_url": "http://127.0.0.1:8000/ui",
+  "branch_name": null,
+  "pr_url": null,
+  "mysql_counts": {
+    "full_list": 40685,
+    "request_sent": 0,
+    "checkforev_0": 6371
+  },
+  "redshift_counts": {
+    "hsm_has_completed": 19679,
+    "hsm_completed": 19737,
+    "has_retry": 58,
+    "hsm_retry": 14634,
+    "leftovers": 14607
+  },
+  "script_counts": {
+    "mark_completed_hsm_has_files": 25,
+    "mark_completed_hsm_only_files": 1,
+    "mark_failed_files": 1,
+    "retry_has_files": 1,
+    "retry_hsm_files": 19
+  },
+  "message": "TECO run completed for 20260507"
+}

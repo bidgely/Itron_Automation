@@ -1,0 +1,11 @@
+{
+  "state": "awaiting_special_pilot",
+  "attachment": {
+    "name": "special_teco.csv",
+    "download_uri": "https://chat.googleusercontent.com/fake-download",
+    "raw": {
+      "contentName": "special_teco.csv",
+      "downloadUri": "https://chat.googleusercontent.com/fake-download"
+    }
+  }
+}

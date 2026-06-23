@@ -1,0 +1,59 @@
+{
+  "pilots": [
+    {
+      "key": "teco",
+      "display_name": "TECO",
+      "pilot_id": 10112,
+      "environment": "prod",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": "Teco_full_list_apr24",
+      "redshift_request_sent_table": "Teco_request_sent_apr24",
+      "redshift_checkforev_zero_table": "Teco_checkforev0_apr24",
+      "special_request_s3_prefix": "s3://bidgely-artifacts2/Murali_Users/special/teco"
+    },
+    {
+      "key": "peco",
+      "display_name": "PECO",
+      "pilot_id": 10112,
+      "environment": "prod",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": "Teco_full_list_apr24",
+      "redshift_request_sent_table": "Teco_request_sent_apr24",
+      "redshift_checkforev_zero_table": "Teco_checkforev0_apr24",
+      "special_request_s3_prefix": "s3://bidgely-artifacts2/Murali_Users/special/teco"
+    },
+    {
+      "key": "luma",
+      "display_name": "LUMA",
+      "pilot_id": 10223,
+      "environment": "prod",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": null,
+      "redshift_request_sent_table": null,
+      "redshift_checkforev_zero_table": null,
+      "special_request_s3_prefix": "s3://bidgely-artifacts2/Murali_Users/special/luma"
+    },
+    {
+      "key": "smud",
+      "display_name": "SMUD",
+      "pilot_id": 10014,
+      "environment": "uat",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": null,
+      "redshift_request_sent_table": null,
+      "redshift_checkforev_zero_table": null,
+      "special_request_s3_prefix": "s3://bidgely-artifacts2/Murali_Users/special/smud"
+    },
+    {
+      "key": "pecan",
+      "display_name": "PECAN",
+      "pilot_id": 10118,
+      "environment": "uat",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": null,
+      "redshift_request_sent_table": null,
+      "redshift_checkforev_zero_table": null,
+      "special_request_s3_prefix": "s3://bidgely-artifacts2/Murali_Users/special/pecan"
+    }
+  ]
+}

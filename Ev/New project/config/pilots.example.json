@@ -1,0 +1,15 @@
+{
+  "pilots": [
+    {
+      "key": "pilot_key",
+      "display_name": "PILOT_DISPLAY_NAME",
+      "pilot_id": 12345,
+      "environment": "prod",
+      "checkforev_zero_min_id": 995,
+      "redshift_full_table": null,
+      "redshift_request_sent_table": null,
+      "redshift_checkforev_zero_table": null,
+      "special_request_s3_prefix": "s3://bucket/path/to/special/pilot_key"
+    }
+  ]
+}
