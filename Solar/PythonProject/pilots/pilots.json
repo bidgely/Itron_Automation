@@ -1,0 +1,46 @@
+{
+  "pilots": [
+    {
+      "id": 10014,
+      "name": "SMUD UAT",
+      "env": "uat",
+      "db_name": "bidgelydbuat_itron",
+      "s3_bucket": "bidgely-smud-itron-uat-external",
+      "s3_prefix": "solar_usage_data/duration=5min/",
+      "export_s3": "s3://bidgely-artifacts2/Murali_Users/SMUD",
+      "threshold": {"mode": "count", "value": 1}
+    },
+    {
+      "id": 10118,
+      "name": "PECAN UAT",
+      "env": "uat",
+      "db_name": "bidgelydbuat_itron",
+      "s3_bucket": "bidgely-pecan-itron-uat-external",
+      "s3_prefix": "solar_usage_data/duration=15min/",
+      "export_s3": "s3://bidgely-artifacts2/Murali_Users/PECAN",
+      "threshold": {"mode": "percent", "value": 0.20},
+      "variants": [
+        {
+          "name": "PECAN UAT"
+        },
+        {
+          "name": "PECAN PRE",
+          "s3_bucket": "bidgely-pecan-itron-uat-external",
+          "s3_prefix": "pre_solar_usage_data/duration=15min/",
+          "export_s3": "s3://bidgely-artifacts2/Murali_Users/PECAN_PRE"
+        }
+      ]
+    },
+    {
+      "id": 10223,
+      "name": "LUMA PROD",
+      "env": "prod",
+      "db_name": "bidgelydbprod",
+      "db_secret_arn": "arn:aws:secretsmanager:us-east-1:189675173661:secret:luma-prod-db-0cwqpd",
+      "s3_bucket": "bidgely-luma-prod-external",
+      "s3_prefix": "solar_usage_data/duration=15min/",
+      "export_s3": "s3://bidgely-artifacts2/Murali_Users/LUMA",
+      "threshold": {"mode": "count", "value": 1}
+    }
+  ]
+}

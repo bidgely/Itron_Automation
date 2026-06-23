@@ -1,0 +1,96 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1400' height='700' viewBox='0 0 1400 700'>
+<rect width='100%' height='100%' fill='#FFFFFF'/>
+<text x='700.0' y='35' text-anchor='middle' font-size='24' font-family='Arial' fill='#263238'>Hourly Present vs Absent Users (2026-04-08)</text>
+<line x1='90' y1='600.00' x2='1370' y2='600.00' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='604.00' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>0</text>
+<line x1='90' y1='494.01' x2='1370' y2='494.01' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='498.01' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>1812</text>
+<line x1='90' y1='388.02' x2='1370' y2='388.02' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='392.02' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>3624</text>
+<line x1='90' y1='281.98' x2='1370' y2='281.98' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='285.98' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>5437</text>
+<line x1='90' y1='175.99' x2='1370' y2='175.99' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='179.99' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>7249</text>
+<line x1='90' y1='70.00' x2='1370' y2='70.00' stroke='#CFD8DC' stroke-width='1'/>
+<text x='78' y='74.00' text-anchor='end' font-size='11' font-family='Arial' fill='#263238'>9061</text>
+<line x1='90' y1='600' x2='1370' y2='600' stroke='#263238' stroke-width='2'/>
+<line x1='90' y1='70' x2='90' y2='600' stroke='#263238' stroke-width='2'/>
+<text x='730.0' y='675' text-anchor='middle' font-size='14' font-family='Arial' fill='#263238'>Hour (X-axis)</text>
+<text x='22' y='335.0' text-anchor='middle' font-size='14' font-family='Arial' fill='#263238' transform='rotate(-90 22 335.0)'>User Count (Y-axis)</text>
+<rect x='96.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='118.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='116.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>00</text>
+<rect x='149.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='172.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='170.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>01</text>
+<rect x='203.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='225.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='223.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>02</text>
+<rect x='256.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='278.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='276.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>03</text>
+<rect x='309.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='332.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='330.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>04</text>
+<rect x='363.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='385.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='383.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>05</text>
+<rect x='416.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='438.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='436.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>06</text>
+<rect x='469.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='492.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='490.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>07</text>
+<rect x='523.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='545.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='543.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>08</text>
+<rect x='576.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='598.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='596.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>09</text>
+<rect x='629.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='652.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='650.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>10</text>
+<rect x='683.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='705.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='703.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>11</text>
+<rect x='736.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='758.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='756.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>12</text>
+<rect x='789.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='812.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='810.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>13</text>
+<rect x='843.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='865.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='863.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>14</text>
+<rect x='896.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='918.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='916.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>15</text>
+<rect x='949.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='972.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='970.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>16</text>
+<rect x='1003.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1025.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1023.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>17</text>
+<rect x='1056.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1078.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1076.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>18</text>
+<rect x='1109.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1132.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1130.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>19</text>
+<rect x='1163.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1185.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1183.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>20</text>
+<rect x='1216.40' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1238.80' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1236.67' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>21</text>
+<rect x='1269.73' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1292.13' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1290.00' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>22</text>
+<rect x='1323.07' y='70.00' width='18.13' height='530.00' fill='#2E7D32'/>
+<rect x='1345.47' y='600.00' width='18.13' height='0.00' fill='#C62828'/>
+<text x='1343.33' y='616' text-anchor='middle' font-size='9' font-family='Arial' fill='#263238'>23</text>
+<rect x='1150' y='30' width='12' height='12' fill='#2E7D32'/>
+<text x='1168' y='41' font-size='12' font-family='Arial' fill='#263238'>Present</text>
+<rect x='1250' y='30' width='12' height='12' fill='#C62828'/>
+<text x='1268' y='41' font-size='12' font-family='Arial' fill='#263238'>Absent</text>
+</svg>

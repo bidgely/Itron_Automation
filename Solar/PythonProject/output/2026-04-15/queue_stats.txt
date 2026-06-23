@@ -1,0 +1,3 @@
+visible_messages=0
+inflight_messages=5
+total_messages=5
