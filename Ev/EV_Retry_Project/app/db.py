@@ -37,14 +37,17 @@ def mysql_connection(config: MySQLConfig):
 
 @contextmanager
 def redshift_connection(config: RedshiftConfig):
-    import redshift_connector
+    import trino.dbapi
+    from trino.auth import BasicAuthentication
 
-    connection = redshift_connector.connect(
+    connection = trino.dbapi.connect(
         host=config.host,
         port=config.port,
         user=config.user,
-        password=config.password,
-        database=config.database,
+        catalog=config.database,
+        http_scheme="https",
+        auth=BasicAuthentication(config.user, config.password),
+        request_timeout=60,
     )
     try:
         yield connection

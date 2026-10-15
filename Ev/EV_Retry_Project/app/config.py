@@ -37,9 +37,13 @@ class S3StageConfig:
     bucket: str
     prefix: str
     region: str
-    access_key_id: str
-    secret_access_key: str
-    session_token: str | None = None
+    assume_role_arn: str | None = None
+
+
+# The prod cron role has no identity-based policy in the nonprod account, so writes that
+# need object-ACL permissions on the nonprod bucket (bidgely-artifacts2) go through this
+# cross-account role instead (ops-provisioned; the prod role is trusted to assume it).
+NONPROD_S3_ASSUME_ROLE_ARN_DEFAULT = "arn:aws:iam::189675173661:role/s3-cross-account-nonprod-access-role"
 
 
 def _env(*names: str, default: str | None = None) -> str:
@@ -66,10 +70,10 @@ def get_mysql_config() -> MySQLConfig:
 def get_redshift_config() -> RedshiftConfig:
     return RedshiftConfig(
         host=_env("ITRON_RS_HOST", "REDSHIFT_HOST"),
-        port=int(_env("ITRON_RS_PORT", "REDSHIFT_PORT", default="5439")),
+        port=int(_env("ITRON_RS_PORT", "REDSHIFT_PORT", default="443")),
         user=_env("ITRON_RS_USER", "REDSHIFT_USER"),
         password=_env("ITRON_RS_PASSWORD", "REDSHIFT_PASSWORD"),
-        database=_env("ITRON_RS_DATABASE", "REDSHIFT_DATABASE", default="bdw"),
+        database=_env("ITRON_RS_DATABASE", "REDSHIFT_DATABASE", default="delta_prodna"),
     )
 
 
@@ -78,10 +82,30 @@ def get_s3_stage_config() -> S3StageConfig:
         bucket=_env("ITRON_S3_BUCKET", default="bidgely-artifacts2"),
         prefix=_env("ITRON_S3_PREFIX", default="Murali/itron-automation"),
         region=_env("AWS_REGION", "AWS_DEFAULT_REGION", default="us-west-2"),
-        access_key_id=_env("AWS_ACCESS_KEY_ID"),
-        secret_access_key=_env("AWS_SECRET_ACCESS_KEY"),
-        session_token=os.getenv("AWS_SESSION_TOKEN"),
+        assume_role_arn=_env(
+            "ITRON_NONPROD_S3_ASSUME_ROLE_ARN", default=NONPROD_S3_ASSUME_ROLE_ARN_DEFAULT
+        ),
     )
+
+
+def get_prod_s3_stage_config() -> S3StageConfig:
+    return S3StageConfig(
+        bucket=_env("ITRON_S3_BUCKET_PROD", default="bidgely-artifacts"),
+        prefix=_env("ITRON_S3_PREFIX", default="Murali/itron-automation"),
+        region=_env("AWS_REGION", "AWS_DEFAULT_REGION", default="us-west-2"),
+    )
+
+
+def get_s3_stage_config_for_pilot(pilot_uat: bool) -> S3StageConfig:
+    """Return UAT or prod S3 stage config based on the pilot's environment.
+
+    Starburst cannot read across the uat/prod bucket boundary (bidgely-artifacts2 vs
+    bidgely-artifacts) when creating an external table, so the staging bucket used for
+    Redshift/Starburst analysis must match the pilot's own environment.
+    """
+    if pilot_uat:
+        return get_s3_stage_config()
+    return get_prod_s3_stage_config()
 
 
 def get_uat_mysql_config() -> MySQLConfig:
@@ -104,10 +128,10 @@ def get_mysql_config_for_pilot(pilot_uat: bool) -> MySQLConfig:
 def get_uat_redshift_config() -> RedshiftConfig:
     return RedshiftConfig(
         host=_env("WEATHER_REDSHIFT_HOST"),
-        port=int(_env("WEATHER_REDSHIFT_PORT", default="5439")),
+        port=int(_env("WEATHER_REDSHIFT_PORT", default="443")),
         user=_env("WEATHER_REDSHIFT_USER"),
         password=_env("WEATHER_REDSHIFT_PASSWORD"),
-        database=_env("WEATHER_REDSHIFT_DATABASE", default="bdw"),
+        database=_env("WEATHER_REDSHIFT_DATABASE", default="delta_uat"),
     )
 
 

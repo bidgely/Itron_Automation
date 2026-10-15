@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1368727d-4e7a-42bd-9285-c399ab6f48a7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/redshift_queries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/redshift_queries.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/redshift_services.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/redshift_services.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/s3_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/app/s3_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/chatbot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/chatbot/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/chatbot/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/chatbot/service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/config_cache/pilots.latest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/build_gchat_message.py" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/build_gchat_message.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/daily_env.sh" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/daily_env.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/daily_secrets.example.sh" beforeDir="false" afterPath="$PROJECT_DIR$/Ev/EV_Retry_Project/support_box/daily_secrets.example.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Solar/PythonProject/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solar/PythonProject/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Solar/PythonProject/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solar/PythonProject/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Solar/PythonProject/pilots/loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/Solar/PythonProject/pilots/loader.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="3GXsZ715zYhSFfX84gJgrcXtq7t" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Itron__Automation__Migration__starbrust__July&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/maheshreddym/Documents/GitHub/Itron_Automation&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-2ee2454479a3-9cdd278e9d02-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.25410.122" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1368727d-4e7a-42bd-9285-c399ab6f48a7" name="Changes" comment="" />
+      <created>1784129300554</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1784129300554</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

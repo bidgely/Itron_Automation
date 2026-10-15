@@ -71,15 +71,15 @@ WEATHER_DATA_PREFIX = os.getenv(
     "WEATHER_DATA_PREFIX",
     "weather-data/weather-data-raw/v3/weather_data_type=FORECAST/duration=1h/country=US",
 )
-WEATHER_LOOKUP_MODE = os.getenv("WEATHER_LOOKUP_MODE", "api")
+WEATHER_LOOKUP_MODE = os.getenv("WEATHER_LOOKUP_MODE", "redshift")
 WEATHER_REDSHIFT_HOST = os.getenv("WEATHER_REDSHIFT_HOST")
-WEATHER_REDSHIFT_PORT = _env_int("WEATHER_REDSHIFT_PORT", 5439)
-WEATHER_REDSHIFT_DATABASE = os.getenv("WEATHER_REDSHIFT_DATABASE", "bdw")
+WEATHER_REDSHIFT_PORT = _env_int("WEATHER_REDSHIFT_PORT", 443)
+WEATHER_REDSHIFT_DATABASE = os.getenv("WEATHER_REDSHIFT_DATABASE", "delta_prodna")
 WEATHER_REDSHIFT_USER = os.getenv("WEATHER_REDSHIFT_USER")
 WEATHER_REDSHIFT_PASSWORD = os.getenv("WEATHER_REDSHIFT_PASSWORD")
 WEATHER_REDSHIFT_QUERY_TEMPLATE = os.getenv(
     "WEATHER_REDSHIFT_QUERY_TEMPLATE",
-    "select distinct zip from home_meta_data where pilot_id = {pilot_id};",
+    "select distinct zip from public.home_meta_data where pilot_id = {pilot_id};",
 )
 
 # Performance tuning knobs

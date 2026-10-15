@@ -15,6 +15,7 @@ from .redshift_queries import (
     hsm_has_completed_sql,
     hsm_retry_sql,
     leftovers_sql,
+    pilot_user_count_sql,
 )
 from .s3_utils import build_archive_run_prefix, delete_s3_prefix_older_than_days
 
@@ -35,6 +36,7 @@ class PilotAnalysisSummary:
     hsm_retry: AnalysisResult
     leftovers: AnalysisResult | None
     archive_folder_s3_uri: str
+    total_user_count: int
 
 
 def _sanitize_table_fragment(value: str) -> str:
@@ -51,56 +53,32 @@ def _load_meter_csv(input_path: Path) -> list[str]:
     return meter_ids
 
 
-def _reset_stage_table(cursor, table_name: str) -> None:
-    cursor.execute(f"CREATE TABLE IF NOT EXISTS test_db.{table_name} (meterid TEXT)")
-    cursor.execute(f"TRUNCATE TABLE test_db.{table_name}")
-    cursor.execute(f"GRANT ALL ON test_db.{table_name} TO PUBLIC")
+def _create_external_csv_table(cursor, table_name: str, columns_sql: str, s3_folder_uri: str) -> None:
+    """Point a test_db table at a folder containing exactly one CSV file.
 
-
-def _reset_hsm_config_stage_table(cursor, table_name: str) -> None:
+    Starburst has no equivalent of Redshift's COPY-from-a-single-file; instead a Hive-type
+    external table reads every file under a folder, so each staged CSV must live in its own
+    dedicated subfolder, one per table.
+    """
+    cursor.execute(f"DROP TABLE IF EXISTS test_db.{table_name}")
     cursor.execute(
-        f"CREATE TABLE IF NOT EXISTS test_db.{table_name} "
-        "(meterid TEXT, bidgelymeterid TEXT, evmin TEXT, evmax TEXT)"
+        f"CREATE TABLE test_db.{table_name} ({columns_sql}) "
+        "WITH (type = 'HIVE', format = 'CSV', "
+        f"external_location = '{s3_folder_uri}', skip_header_line_count = 1)"
     )
-    cursor.execute(f"TRUNCATE TABLE test_db.{table_name}")
-    cursor.execute(f"GRANT ALL ON test_db.{table_name} TO PUBLIC")
-
-
-def _s3_key_for_csv(s3_stage_config, pilot: PilotDefinition, file_name: str) -> str:
-    prefix = s3_stage_config.prefix.strip("/")
-    return f"{prefix}/{pilot.key}/{file_name}"
-
-
-def _copy_credentials_sql(s3_stage_config) -> str:
-    credentials = (
-        "aws_access_key_id="
-        f"{s3_stage_config.access_key_id};aws_secret_access_key={s3_stage_config.secret_access_key}"
-    )
-    if s3_stage_config.session_token:
-        credentials += f";token={s3_stage_config.session_token}"
-    return credentials
-
-
-def _copy_csv_into_table(cursor, table_name: str, s3_uri: str, s3_stage_config) -> None:
-    copy_sql = f"""
-COPY test_db.{table_name}
-FROM '{s3_uri}'
-CREDENTIALS '{_copy_credentials_sql(s3_stage_config)}'
-REGION '{s3_stage_config.region}'
-DELIMITER ','
-IGNOREHEADER 1
-EMPTYASNULL
-TRIMBLANKS
-BLANKSASNULL
-MAXERROR 20
-"""
-    cursor.execute(copy_sql)
+    cursor.execute(f"GRANT ALL PRIVILEGES ON test_db.{table_name} TO ROLE public")
 
 
 def _fetch_meter_ids(cursor, sql: str) -> list[str]:
     cursor.execute(sql)
     rows = cursor.fetchall()
     return [row[0] for row in rows if row and row[0]]
+
+
+def _fetch_scalar_count(cursor, sql: str) -> int:
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    return int(rows[0][0]) if rows and rows[0] and rows[0][0] is not None else 0
 
 
 def _write_result(output_dir: Path, filename: str, values: list[str]) -> AnalysisResult:
@@ -120,10 +98,15 @@ def _stage_tables_for_pilot(
     connection,
     pilot: PilotDefinition,
     output_dir: Path,
-    s3_stage_config,
+    table_stage_s3_config,
     archive_run_prefix: str,
     table_name_prefix: str | None = None,
 ) -> tuple[str, str]:
+    # table_stage_s3_config must be the bucket matching this pilot's own environment
+    # (get_s3_stage_config_for_pilot) — Starburst cannot read across the uat/prod bucket
+    # boundary when creating an external table. This is the ONLY place that distinction
+    # matters; every other S3 use in this module (archiving results, cleanup) is plain
+    # storage that Starburst never reads back, so it stays on the one shared bucket.
     prefix = pilot.display_name.title()
     if table_name_prefix:
         fragment = _sanitize_table_fragment(table_name_prefix)
@@ -142,55 +125,80 @@ def _stage_tables_for_pilot(
     latest_hsm_config_count = max(sum(1 for _ in latest_hsm_config_csv.open("r", encoding="utf-8")) - 1, 0)
     latest_hsm_config_table = f"{full_table}_latest_hsm_ev_cfg"
 
-    print(f"[{pilot.display_name}] Step 1/4: uploading CSV files to S3 for fast Redshift COPY...")
+    print(f"[{pilot.display_name}] Step 1/4: uploading CSV files to S3, one folder per table...")
     from .s3_utils import upload_s3_file
 
+    # Starburst's Hive-type external tables read every file under a folder (there is no
+    # Redshift-style COPY-from-a-single-file), so each CSV gets its own dedicated subfolder
+    # named after the table it backs, keeping exactly one file per folder.
+    full_folder = f"{archive_run_prefix}/{full_table}"
+    checkforev_zero_folder = f"{archive_run_prefix}/{checkforev_zero_table}"
+    latest_hsm_config_folder = f"{archive_run_prefix}/{latest_hsm_config_table}"
+
+    # bucket-owner-full-control: these 3 files get read back by Starburst as external
+    # tables, which authenticates as the bucket owner — without this ACL, an object
+    # uploaded by a different AWS account/role is invisible to that read path (see the
+    # SMUD HIVE_CANNOT_OPEN_SPLIT failure). Uploads elsewhere in this codebase (MySQL
+    # exports, archived results) are never read by Starburst and don't need this.
     full_s3_uri = upload_s3_file(
         full_csv,
-        s3_stage_config.bucket,
-        f"{archive_run_prefix}/{full_csv.name}",
-        s3_stage_config.region,
+        table_stage_s3_config.bucket,
+        f"{full_folder}/{full_csv.name}",
+        table_stage_s3_config.region,
+        acl="bucket-owner-full-control",
+        assume_role_arn=table_stage_s3_config.assume_role_arn,
     )
     print(f"[{pilot.display_name}]   uploaded {full_csv.name} -> {full_s3_uri}")
     checkforev_zero_s3_uri = upload_s3_file(
         checkforev_zero_csv,
-        s3_stage_config.bucket,
-        f"{archive_run_prefix}/{checkforev_zero_csv.name}",
-        s3_stage_config.region,
+        table_stage_s3_config.bucket,
+        f"{checkforev_zero_folder}/{checkforev_zero_csv.name}",
+        table_stage_s3_config.region,
+        acl="bucket-owner-full-control",
+        assume_role_arn=table_stage_s3_config.assume_role_arn,
     )
     print(f"[{pilot.display_name}]   uploaded {checkforev_zero_csv.name} -> {checkforev_zero_s3_uri}")
     latest_hsm_config_s3_uri = upload_s3_file(
         latest_hsm_config_csv,
-        s3_stage_config.bucket,
-        f"{archive_run_prefix}/{latest_hsm_config_csv.name}",
-        s3_stage_config.region,
+        table_stage_s3_config.bucket,
+        f"{latest_hsm_config_folder}/{latest_hsm_config_csv.name}",
+        table_stage_s3_config.region,
+        acl="bucket-owner-full-control",
+        assume_role_arn=table_stage_s3_config.assume_role_arn,
     )
     print(f"[{pilot.display_name}]   uploaded {latest_hsm_config_csv.name} -> {latest_hsm_config_s3_uri}")
 
-    print(f"[{pilot.display_name}] Step 2/4: staging CSV data into Redshift test_db tables with COPY...")
+    print(f"[{pilot.display_name}] Step 2/4: pointing test_db tables at the uploaded CSVs...")
     with connection.cursor() as cursor:
         print(f"[{pilot.display_name}]   loading test_db.{full_table} ({len(full_meter_ids)} rows)")
-        _reset_stage_table(cursor, full_table)
-        _copy_csv_into_table(cursor, full_table, full_s3_uri, s3_stage_config)
+        _create_external_csv_table(
+            cursor, full_table, "meterid VARCHAR", f"s3://{table_stage_s3_config.bucket}/{full_folder}/"
+        )
 
         print(
             f"[{pilot.display_name}]   loading test_db.{checkforev_zero_table} "
             f"({len(checkforev_zero_meter_ids)} rows)"
         )
-        _reset_stage_table(cursor, checkforev_zero_table)
-        if checkforev_zero_meter_ids:
-            _copy_csv_into_table(cursor, checkforev_zero_table, checkforev_zero_s3_uri, s3_stage_config)
+        _create_external_csv_table(
+            cursor,
+            checkforev_zero_table,
+            "meterid VARCHAR",
+            f"s3://{table_stage_s3_config.bucket}/{checkforev_zero_folder}/",
+        )
 
         print(
             f"[{pilot.display_name}]   loading test_db.{latest_hsm_config_table} "
             f"({latest_hsm_config_count} rows)"
         )
-        _reset_hsm_config_stage_table(cursor, latest_hsm_config_table)
-        if latest_hsm_config_count:
-            _copy_csv_into_table(cursor, latest_hsm_config_table, latest_hsm_config_s3_uri, s3_stage_config)
+        _create_external_csv_table(
+            cursor,
+            latest_hsm_config_table,
+            "meterid VARCHAR, bidgelymeterid VARCHAR, evmin VARCHAR, evmax VARCHAR",
+            f"s3://{table_stage_s3_config.bucket}/{latest_hsm_config_folder}/",
+        )
 
     connection.commit()
-    print(f"[{pilot.display_name}]   Redshift staging complete.")
+    print(f"[{pilot.display_name}]   Starburst staging complete.")
     return full_table, checkforev_zero_table, latest_hsm_config_table
 
 
@@ -198,6 +206,7 @@ def run_redshift_analysis(
     *,
     config,
     s3_stage_config,
+    table_stage_s3_config,
     pilot: PilotDefinition,
     output_dir: Path,
     archive_run_prefix: str | None = None,
@@ -226,11 +235,14 @@ def run_redshift_analysis(
             connection,
             pilot,
             output_dir,
-            s3_stage_config,
+            table_stage_s3_config,
             archive_run_prefix,
             table_name_prefix,
         )
         with connection.cursor() as cursor:
+            total_user_count = _fetch_scalar_count(cursor, pilot_user_count_sql(pilot.pilot_id))
+            print(f"[{pilot.display_name}]   Full User Count: {total_user_count}")
+
             print(f"[{pilot.display_name}] Step 3/4: calculating HSM+HAS completed bucket...")
             hsm_has_completed = _fetch_meter_ids(cursor, hsm_has_completed_sql(full_table, latest_hsm_config_table))
             print(f"[{pilot.display_name}]   HSM+HAS completed: {len(hsm_has_completed)}")
@@ -318,4 +330,5 @@ def run_redshift_analysis(
         hsm_retry=hsm_retry_result,
         leftovers=leftovers_result,
         archive_folder_s3_uri=archive_folder_s3_uri,
+        total_user_count=total_user_count,
     )
