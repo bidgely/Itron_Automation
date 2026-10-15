@@ -3,8 +3,6 @@ import boto3
 import glob
 import random
 import re
-import shutil
-import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import urlparse
@@ -456,9 +454,8 @@ def fetch_user_postal_code(uuid, api_base_url, token):
 
 
 def fetch_pilot_postal_codes_from_redshift(pilot, weather_config):
-    psql_path = shutil.which("psql")
-    if not psql_path:
-        raise RuntimeError("psql is not installed on this machine")
+    import trino.dbapi
+    from trino.auth import BasicAuthentication
 
     host = weather_config.get("redshift_host")
     user = weather_config.get("redshift_user")
@@ -483,39 +480,29 @@ def fetch_pilot_postal_codes_from_redshift(pilot, weather_config):
             "Missing Redshift weather config: " + ", ".join(sorted(missing_fields))
         )
 
-    query = query_template.format(pilot_id=pilot)
-    env = os.environ.copy()
-    env["PGPASSWORD"] = password
-    result = subprocess.run(
-        [
-            psql_path,
-            "-X",
-            "-h",
-            host,
-            "-p",
-            str(port),
-            "-U",
-            user,
-            "-d",
-            database,
-            "-v",
-            "ON_ERROR_STOP=1",
-            "-At",
-            "-c",
-            query,
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-        env=env,
-        timeout=60,
+    query = query_template.format(pilot_id=pilot).strip().rstrip(";")
+    connection = trino.dbapi.connect(
+        host=host,
+        port=port,
+        user=user,
+        catalog=database,
+        schema="public",
+        http_scheme="https",
+        auth=BasicAuthentication(user, password),
+        request_timeout=60,
     )
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+    finally:
+        connection.close()
 
     postal_codes = sorted(
         {
-            normalize_postal_code(line)
-            for line in result.stdout.splitlines()
-            if normalize_postal_code(line)
+            normalize_postal_code(row[0])
+            for row in rows
+            if row and normalize_postal_code(row[0])
         }
     )
     return postal_codes

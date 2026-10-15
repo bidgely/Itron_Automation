@@ -118,6 +118,15 @@ FROM (
 """
 
 
+def pilot_user_count_sql(pilot_id: int) -> str:
+    return f"""
+SELECT COUNT(DISTINCT uuid)
+FROM public.user_meta_data
+WHERE pilot_id = {pilot_id}
+"""
+
+
+
 def leftovers_sql(full_table: str, checkforev_zero_table: str) -> str:
     return f"""
 WITH hsm_has_ev AS (

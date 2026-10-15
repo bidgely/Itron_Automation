@@ -3,15 +3,13 @@
 # Support box runtime configuration for daily terminal runs.
 # Load this file with: source /home/bsup/itron-automation/support_box/daily_env.sh
 
-export AWS_ACCESS_KEY_ID="AKIASYKMFO4ORQN576XZ"
-export AWS_SECRET_ACCESS_KEY="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"
 export AWS_REGION="us-west-2"
 
-export ITRON_RS_HOST="na-rs1.ctxwwf9dwnm1.us-east-1.redshift.amazonaws.com"
-export ITRON_RS_PORT="5439"
-export ITRON_RS_USER="sbatchu"
-export ITRON_RS_DATABASE="bdw"
-export ITRON_RS_PASSWORD="vBbzuhF85$"
+export ITRON_RS_HOST="bidgely-prod-na-cluster.trino.galaxy.starburst.io"
+export ITRON_RS_PORT="443"
+export ITRON_RS_USER="read-only-user@bidgely.galaxy.starburst.io"
+export ITRON_RS_DATABASE="delta_prodna"
+export ITRON_RS_PASSWORD='GXY$n1rqUNHGeWt9M2yLmpQiwbS1mbkglMihyAlmNcKRX6D2jSspuMSxyMOW'
 
 export PILOT_10223_DB_HOST="127.0.0.1"
 export PILOT_10223_DB_PORT="3308"
@@ -29,7 +27,7 @@ export ITRON_CHAT_UPLOAD_S3_PREFIX="Murali_Users/special/chat_uploads"
 export ITRON_TUNNEL_KEY="/home/bsup/.ssh/id_ed25519"
 export ITRON_TUNNEL_HOST="sbatchu@jumphost-prodna2.bidgely.com"
 export ITRON_TUNNEL_PORT="3308"
-export ITRON_TUNNEL_TARGET="10.2.5.53:3306"
+export ITRON_TUNNEL_TARGET="prodna2-rds.clecyrirlzdq.us-east-1.rds.amazonaws.com:3306"
 
 # Optional special-request prefixes.
 # Convention:
@@ -53,11 +51,11 @@ export ITRON_UAT_DB_PASSWORD="uatRdSbPR0D6033"
 export ITRON_UAT_DB_DATABASE="bidgelydbuat_itron"
 
 # UAT Redshift
-export WEATHER_REDSHIFT_HOST="uat-redshiftcluster-5nzk27mcdow7.cgxykwll3uce.us-west-2.redshift.amazonaws.com"
-export WEATHER_REDSHIFT_PORT="5439"
-export WEATHER_REDSHIFT_DATABASE="bdw"
-export WEATHER_REDSHIFT_USER="sbatchu"
-export WEATHER_REDSHIFT_PASSWORD='vBbzuhF85$'
+export WEATHER_REDSHIFT_HOST="bidgely-uat-cluster.trino.galaxy.starburst.io"
+export WEATHER_REDSHIFT_PORT="443"
+export WEATHER_REDSHIFT_DATABASE="delta_uat"
+export WEATHER_REDSHIFT_USER="read-only-user@bidgely.galaxy.starburst.io"
+export WEATHER_REDSHIFT_PASSWORD='GXY$n1rqUNHGeWt9M2yLmpQiwbS1mbkglMihyAlmNcKRX6D2jSspuMSxyMOW'
 
 # Optional local-only secret file for automation.
 # Keep this on the support box only and do not commit it.

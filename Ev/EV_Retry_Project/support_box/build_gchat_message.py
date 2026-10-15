@@ -29,6 +29,7 @@ def _script_counts_from_dir(scripts_dir: Path) -> dict[str, int]:
 
 
 def build_daily_success_message(pilot: str, date_str: str, output: str) -> str:
+    full_user_count = _extract_count(output, "Full User Count") or 0
     full_list = _extract_count(output, "full list") or 0
     checkforev_zero = _extract_count(output, "CheckForEV=0 list") or 0
     effective = full_list - checkforev_zero
@@ -57,6 +58,7 @@ def build_daily_success_message(pilot: str, date_str: str, output: str) -> str:
         f"{pilot.upper()} run completed for {date_str}",
         "",
         "MySQL Counts",
+        f"Full User Count = {full_user_count}",
         f"Full EV list -> {full_list}",
         f"CheckForEV=0 -> {checkforev_zero}",
         f"Effective -> {effective}",
@@ -90,6 +92,7 @@ def build_special_success_message(
     meter_list_s3: str,
     output: str,
 ) -> str:
+    full_user_count = _extract_count(output, "Full User Count") or 0
     full_list = _extract_count(output, "special full list") or _extract_count(output, "full list") or 0
     checkforev_zero = _extract_count(output, "special CheckForEV=0 list") or _extract_count(output, "CheckForEV=0 list") or 0
     effective = full_list - checkforev_zero
@@ -106,6 +109,7 @@ def build_special_success_message(
         f"S3 file -> {meter_list_s3}",
         "",
         "MySQL Counts",
+        f"Full User Count = {full_user_count}",
         f"Full EV list -> {full_list}",
         f"CheckForEV=0 -> {checkforev_zero}",
         f"Effective -> {effective}",

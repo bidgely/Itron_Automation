@@ -274,16 +274,19 @@ def main() -> int:
 
     if args.command == "run-redshift-analysis":
         from .redshift_services import run_redshift_analysis
+        from .config import get_s3_stage_config_for_pilot, get_uat_redshift_config
 
-        config = get_redshift_config()
         s3_stage_config = get_s3_stage_config()
         pilot_keys = get_supported_pilot_keys() if args.pilot == "all" else [args.pilot]
 
         for pilot_key in pilot_keys:
             pilot = get_pilot_definition(pilot_key)
+            config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
+            table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
             summary = run_redshift_analysis(
                 config=config,
                 s3_stage_config=s3_stage_config,
+                table_stage_s3_config=table_stage_s3_config,
                 pilot=pilot,
                 output_dir=Path(args.output_dir),
             )
@@ -338,9 +341,10 @@ def main() -> int:
 
         for pilot_key in pilot_keys:
             pilot = get_pilot_definition(pilot_key)
-            from .config import get_mysql_config_for_pilot, get_uat_redshift_config
+            from .config import get_mysql_config_for_pilot, get_s3_stage_config_for_pilot, get_uat_redshift_config
             mysql_config = get_mysql_config_for_pilot(pilot.uat)
             redshift_config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
+            table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
             pilot_id = args.pilot_id if args.pilot != "all" and args.pilot_id else pilot.pilot_id
             archive_date = datetime.now().strftime("%Y%m%d")
             archive_run_prefix = build_archive_run_prefix(
@@ -371,6 +375,7 @@ def main() -> int:
             analysis_summary = run_redshift_analysis(
                 config=redshift_config,
                 s3_stage_config=s3_stage_config,
+                table_stage_s3_config=table_stage_s3_config,
                 pilot=pilot,
                 output_dir=Path(args.output_dir),
                 archive_run_prefix=archive_run_prefix,
@@ -402,10 +407,13 @@ def main() -> int:
         from .script_generation import generate_special_request_scripts
         from .services import export_special_request_meter_lists
 
+        from .config import get_s3_stage_config_for_pilot, get_uat_redshift_config
+
         mysql_config = get_mysql_config()
-        redshift_config = get_redshift_config()
-        s3_stage_config = get_s3_stage_config()
         pilot = get_pilot_definition(args.pilot)
+        redshift_config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
+        s3_stage_config = get_s3_stage_config()
+        table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
         request_output_dir = Path(args.output_dir) / args.request_name
         archive_date = datetime.now().strftime("%Y%m%d")
         archive_run_prefix = build_archive_run_prefix(
@@ -435,6 +443,7 @@ def main() -> int:
         analysis_summary = run_redshift_analysis(
             config=redshift_config,
             s3_stage_config=s3_stage_config,
+            table_stage_s3_config=table_stage_s3_config,
             pilot=pilot,
             output_dir=request_output_dir,
             archive_run_prefix=archive_run_prefix,
@@ -487,11 +496,12 @@ def main() -> int:
         from chatbot.schemas import RunSummaryResponse
         from chatbot.storage import save_run_summary
 
-        s3_stage_config = get_s3_stage_config()
         pilot = get_pilot_definition(args.pilot)
-        from .config import get_mysql_config_for_pilot, get_uat_redshift_config
+        from .config import get_mysql_config_for_pilot, get_s3_stage_config_for_pilot, get_uat_redshift_config
         mysql_config = get_mysql_config_for_pilot(pilot.uat)
         redshift_config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
+        s3_stage_config = get_s3_stage_config()
+        table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
         dated_output_dir = Path(args.output_dir) / args.date
         archive_run_prefix = build_archive_run_prefix(
             base_prefix=s3_stage_config.prefix,
@@ -519,6 +529,7 @@ def main() -> int:
         analysis_summary = run_redshift_analysis(
             config=redshift_config,
             s3_stage_config=s3_stage_config,
+            table_stage_s3_config=table_stage_s3_config,
             pilot=pilot,
             output_dir=dated_output_dir,
             archive_run_prefix=archive_run_prefix,

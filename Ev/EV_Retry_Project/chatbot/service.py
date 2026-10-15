@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 
-from app.config import get_mysql_config, get_redshift_config, get_s3_stage_config, get_utils_repo_path, get_uat_mysql_config, get_uat_redshift_config
+from app.config import get_mysql_config, get_redshift_config, get_s3_stage_config, get_s3_stage_config_for_pilot, get_utils_repo_path, get_uat_mysql_config, get_uat_redshift_config
 from app.pilots import get_pilot_definition
 from app.redshift_services import run_redshift_analysis
 from app.repo_utils import export_scripts_to_utils_repo
@@ -29,6 +29,7 @@ def run_normal_flow(request: NormalRunRequest) -> RunSummaryResponse:
     mysql_config = get_uat_mysql_config() if pilot.uat else get_mysql_config()
     redshift_config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
     s3_stage_config = get_s3_stage_config()
+    table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
     archive_run_prefix = build_archive_run_prefix(
         base_prefix=s3_stage_config.prefix,
         pilot_key=pilot.key,
@@ -49,6 +50,7 @@ def run_normal_flow(request: NormalRunRequest) -> RunSummaryResponse:
     analysis_summary = run_redshift_analysis(
         config=redshift_config,
         s3_stage_config=s3_stage_config,
+        table_stage_s3_config=table_stage_s3_config,
         pilot=pilot,
         output_dir=dated_output_dir,
         archive_run_prefix=archive_run_prefix,
@@ -84,6 +86,7 @@ def run_normal_flow(request: NormalRunRequest) -> RunSummaryResponse:
         branch_name=branch_name,
         pr_url=pr_url,
         mysql_counts={
+            "total_user_count": analysis_summary.total_user_count,
             "full_list": export_summary.full_list.row_count,
             "request_sent": export_summary.request_sent_list.row_count,
             "checkforev_0": export_summary.checkforev_zero_list.row_count,
@@ -135,6 +138,7 @@ def run_special_flow(request: SpecialRunRequest) -> RunSummaryResponse:
     mysql_config = get_uat_mysql_config() if pilot.uat else get_mysql_config()
     redshift_config = get_uat_redshift_config() if pilot.uat else get_redshift_config()
     s3_stage_config = get_s3_stage_config()
+    table_stage_s3_config = get_s3_stage_config_for_pilot(pilot.uat)
     archive_run_prefix = build_archive_run_prefix(
         base_prefix=s3_stage_config.prefix,
         pilot_key=pilot.key,
@@ -158,6 +162,7 @@ def run_special_flow(request: SpecialRunRequest) -> RunSummaryResponse:
     analysis_summary = run_redshift_analysis(
         config=redshift_config,
         s3_stage_config=s3_stage_config,
+        table_stage_s3_config=table_stage_s3_config,
         pilot=pilot,
         output_dir=request_output_dir,
         archive_run_prefix=archive_run_prefix,
@@ -194,6 +199,7 @@ def run_special_flow(request: SpecialRunRequest) -> RunSummaryResponse:
         branch_name=branch_name,
         pr_url=pr_url,
         mysql_counts={
+            "total_user_count": analysis_summary.total_user_count,
             "full_list": export_summary.full_list.row_count,
             "request_sent": export_summary.request_sent_list.row_count,
             "checkforev_0": export_summary.checkforev_zero_list.row_count,

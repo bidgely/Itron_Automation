@@ -19,7 +19,7 @@ _WEATHER_ENV_DEFAULTS = {
         "prefix": "weather-data/weather-data-raw/v3/weather_data_type=FORECAST/duration=1h/country=US",
     },
     "prod": {
-        "lookup_mode": "api",
+        "lookup_mode": "redshift",
         "bucket": "bidgely-data-warehouse-prod-na",
         "prefix": "weather-data/weather-data-raw/v3/weather_data_type=FORECAST/duration=1h/country=US",
     },
@@ -75,6 +75,35 @@ def _pilot_db_config(pilot_id: int, db_name: str | None, env: str) -> dict | Non
     if not all([host, user, password, database]):
         return None
     return {"host": host, "port": port, "user": user, "password": password, "database": database}
+
+
+_REDSHIFT_ENV_PREFIX = {
+    "uat": "WEATHER_REDSHIFT",
+    "prod": "ITRON_RS",
+}
+
+_REDSHIFT_DATABASE_DEFAULTS = {
+    "uat": "delta_uat",
+    "prod": "delta_prodna",
+}
+
+
+def _redshift_config_for_env(pilot_id: int, env: str) -> dict:
+    """Resolve redshift/starburst connection settings for a pilot's env (uat -> WEATHER_REDSHIFT_*, prod -> ITRON_RS_*).
+
+    Per-pilot PILOT_{pilot_id}_WEATHER_REDSHIFT_* overrides always take priority over the env-based defaults.
+    """
+    prefix = _REDSHIFT_ENV_PREFIX.get(env, "WEATHER_REDSHIFT")
+    default_database = _REDSHIFT_DATABASE_DEFAULTS.get(env, "delta_uat")
+    return {
+        "redshift_host": _e(f"PILOT_{pilot_id}_WEATHER_REDSHIFT_HOST", _e(f"{prefix}_HOST")),
+        "redshift_port": _ei(f"PILOT_{pilot_id}_WEATHER_REDSHIFT_PORT", _ei(f"{prefix}_PORT", 443)),
+        "redshift_database": _e(
+            f"PILOT_{pilot_id}_WEATHER_REDSHIFT_DATABASE", _e(f"{prefix}_DATABASE", default_database)
+        ),
+        "redshift_user": _e(f"PILOT_{pilot_id}_WEATHER_REDSHIFT_USER", _e(f"{prefix}_USER")),
+        "redshift_password": _e(f"PILOT_{pilot_id}_WEATHER_REDSHIFT_PASSWORD", _e(f"{prefix}_PASSWORD")),
+    }
 
 
 def _pilot_db_tunnel(pilot_id: int) -> dict | None:
@@ -161,14 +190,10 @@ def _parse(data: bytes) -> dict:
             "token_env": _e(f"PILOT_{pid}_USER_API_TOKEN_ENV", _e("USER_API_TOKEN_ENV", "USER_API_BEARER_TOKEN")),
             "weather_bucket": _e(f"PILOT_{pid}_WEATHER_DATA_BUCKET", wd["bucket"]),
             "weather_prefix": _e(f"PILOT_{pid}_WEATHER_DATA_PREFIX", wd["prefix"]),
-            "redshift_host": _e(f"PILOT_{pid}_WEATHER_REDSHIFT_HOST", _e("WEATHER_REDSHIFT_HOST")),
-            "redshift_port": _ei(f"PILOT_{pid}_WEATHER_REDSHIFT_PORT", _ei("WEATHER_REDSHIFT_PORT", 5439)),
-            "redshift_database": _e(f"PILOT_{pid}_WEATHER_REDSHIFT_DATABASE", _e("WEATHER_REDSHIFT_DATABASE", "bdw")),
-            "redshift_user": _e(f"PILOT_{pid}_WEATHER_REDSHIFT_USER", _e("WEATHER_REDSHIFT_USER")),
-            "redshift_password": _e(f"PILOT_{pid}_WEATHER_REDSHIFT_PASSWORD", _e("WEATHER_REDSHIFT_PASSWORD")),
+            **_redshift_config_for_env(pid, env),
             "redshift_query_template": _e(
                 f"PILOT_{pid}_WEATHER_REDSHIFT_QUERY_TEMPLATE",
-                _e("WEATHER_REDSHIFT_QUERY_TEMPLATE", "select distinct zip from home_meta_data where pilot_id = {pilot_id};"),
+                _e("WEATHER_REDSHIFT_QUERY_TEMPLATE", "select distinct zip from public.home_meta_data where pilot_id = {pilot_id};"),
             ),
         }
 

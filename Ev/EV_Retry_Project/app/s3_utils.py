@@ -12,10 +12,46 @@ def parse_s3_uri(s3_uri: str) -> tuple[str, str]:
     return parsed.netloc, parsed.path.lstrip("/")
 
 
-def s3_client_for_region(region: str):
+# Cache of assumed-role sessions keyed by role ARN, so a single cron run doesn't call
+# sts:AssumeRole once per file upload. Re-assumed a few minutes before actual expiry.
+_ASSUMED_SESSION_CACHE: dict[str, tuple[object, datetime]] = {}
+
+
+def _assumed_role_session(role_arn: str, region: str, session_name: str = "itron-automation-nonprod"):
+    """Return a boto3 Session backed by temporary credentials from sts:AssumeRole.
+
+    The prod role's own identity-based policy only grants permissions inside the prod
+    account, so writing to a bucket owned by the nonprod account (e.g. bidgely-artifacts2)
+    requires assuming a role that lives in that nonprod account instead.
+    """
     import boto3
 
-    session = boto3.session.Session(region_name=region)
+    cached = _ASSUMED_SESSION_CACHE.get(role_arn)
+    if cached is not None:
+        session, expiration = cached
+        if expiration - timedelta(minutes=5) > datetime.now(timezone.utc):
+            return session
+
+    sts_client = boto3.client("sts", region_name=region)
+    response = sts_client.assume_role(RoleArn=role_arn, RoleSessionName=session_name)
+    creds = response["Credentials"]
+    session = boto3.session.Session(
+        aws_access_key_id=creds["AccessKeyId"],
+        aws_secret_access_key=creds["SecretAccessKey"],
+        aws_session_token=creds["SessionToken"],
+        region_name=region,
+    )
+    _ASSUMED_SESSION_CACHE[role_arn] = (session, creds["Expiration"])
+    return session
+
+
+def s3_client_for_region(region: str, assume_role_arn: str | None = None):
+    import boto3
+
+    if assume_role_arn:
+        session = _assumed_role_session(assume_role_arn, region)
+    else:
+        session = boto3.session.Session(region_name=region)
     return session.client("s3")
 
 
@@ -27,9 +63,18 @@ def download_s3_file(s3_uri: str, destination: Path, region: str) -> Path:
     return destination
 
 
-def upload_s3_file(local_path: Path, bucket: str, key: str, region: str) -> str:
-    client = s3_client_for_region(region)
-    client.upload_file(str(local_path), bucket, key)
+def upload_s3_file(
+    local_path: Path,
+    bucket: str,
+    key: str,
+    region: str,
+    *,
+    acl: str | None = None,
+    assume_role_arn: str | None = None,
+) -> str:
+    client = s3_client_for_region(region, assume_role_arn=assume_role_arn)
+    extra_args = {"ACL": acl} if acl else {}
+    client.upload_file(str(local_path), bucket, key, ExtraArgs=extra_args)
     return f"s3://{bucket}/{key}"
 
 
